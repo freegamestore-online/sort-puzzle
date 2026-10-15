@@ -14,18 +14,27 @@ export interface PourEvent {
   destPrevLen: number;
 }
 
-export interface ColourSortState {
-  capacity: number;
+/** What undo restores. Everything that a player action can change is in here. */
+interface Snapshot {
   tubes: Tube[];
-  selected: number | null;
   moves: number;
+  extraTubeUsed: boolean;
+}
+
+export interface ColourSortState extends Snapshot {
+  capacity: number;
+  selected: number | null;
   pour: PourEvent | null;
   solved: boolean;
+  /** Snapshots taken before each undoable action, most recent last. */
+  history: Snapshot[];
 }
 
 export type ColourSortAction =
   | { type: 'tap'; index: number }
   | { type: 'pourEnd' }
+  | { type: 'undo' }
+  | { type: 'extraTube' }
   | { type: 'reset'; level: Level };
 
 export function createState(level: Level): ColourSortState {
@@ -34,9 +43,16 @@ export function createState(level: Level): ColourSortState {
     tubes: level.tubes.map((tube) => [...tube]),
     selected: null,
     moves: 0,
+    extraTubeUsed: false,
     pour: null,
     solved: isSolved(level.tubes, level.capacity),
+    history: [],
   };
+}
+
+/** True when a helper or tap is allowed right now. */
+function canAct(state: ColourSortState): boolean {
+  return state.pour === null && !state.solved;
 }
 
 /**
@@ -52,8 +68,34 @@ export function colourSortReducer(state: ColourSortState, action: ColourSortActi
     case 'pourEnd':
       return state.pour ? { ...state, pour: null } : state;
 
+    case 'undo': {
+      const previous = state.history[state.history.length - 1];
+      if (!previous || state.pour !== null) return state;
+      return {
+        ...state,
+        ...previous,
+        selected: null,
+        pour: null,
+        solved: isSolved(previous.tubes, state.capacity),
+        history: state.history.slice(0, -1),
+      };
+    }
+
+    case 'extraTube': {
+      // One extra empty tube per level. An empty tube never blocks a solution.
+      if (!canAct(state) || state.extraTubeUsed) return state;
+      const tubes = [...state.tubes, []];
+      return {
+        ...state,
+        tubes,
+        selected: null,
+        extraTubeUsed: true,
+        history: [...state.history, snapshotOf(state)],
+      };
+    }
+
     case 'tap': {
-      if (state.pour || state.solved) return state;
+      if (!canAct(state)) return state;
       const { index } = action;
       const tapped = state.tubes[index];
       if (tapped === undefined) return state;
@@ -77,7 +119,12 @@ export function colourSortReducer(state: ColourSortState, action: ColourSortActi
         moves,
         pour: { id: moves, from, to: index, count: result.count, destPrevLen: tapped.length },
         solved: isSolved(result.tubes, state.capacity),
+        history: [...state.history, snapshotOf(state)],
       };
     }
   }
+}
+
+function snapshotOf(state: ColourSortState): Snapshot {
+  return { tubes: state.tubes, moves: state.moves, extraTubeUsed: state.extraTubeUsed };
 }

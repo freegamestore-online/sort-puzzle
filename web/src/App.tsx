@@ -51,7 +51,31 @@ export default function App() {
           state={state}
           onTap={(index) => dispatch({ type: "tap", index })}
         />
-        {showWin && <WinCard moves={state.moves} onPlayAgain={reset} />}
+        <div className="cs-helpers">
+          <GameButton
+            variant="secondary"
+            size="md"
+            disabled={state.history.length === 0 || state.pour !== null}
+            onClick={() => dispatch({ type: "undo" })}
+          >
+            Undo
+          </GameButton>
+          <GameButton
+            variant="secondary"
+            size="md"
+            disabled={state.extraTubeUsed || state.solved || state.pour !== null}
+            onClick={() => dispatch({ type: "extraTube" })}
+          >
+            {state.extraTubeUsed ? "Extra tube used" : "Add extra tube"}
+          </GameButton>
+        </div>
+        {showWin && (
+          <WinCard
+            moves={state.moves}
+            onPlayAgain={reset}
+            onUndo={() => dispatch({ type: "undo" })}
+          />
+        )}
         <a
           href="https://freegamestore.online"
           className="cs-credit"
@@ -86,7 +110,15 @@ function SoundCues({
   return null;
 }
 
-function WinCard({ moves, onPlayAgain }: { moves: number; onPlayAgain: () => void }) {
+function WinCard({
+  moves,
+  onPlayAgain,
+  onUndo,
+}: {
+  moves: number;
+  onPlayAgain: () => void;
+  onUndo: () => void;
+}) {
   return (
     <div className="cs-win" role="status">
       <div className="cs-win-card">
@@ -97,6 +129,11 @@ function WinCard({ moves, onPlayAgain }: { moves: number; onPlayAgain: () => voi
         <GameButton variant="primary" size="lg" block onClick={onPlayAgain}>
           Play again
         </GameButton>
+        <div style={{ marginTop: "0.5rem" }}>
+          <GameButton variant="ghost" size="md" block onClick={onUndo}>
+            Undo last pour
+          </GameButton>
+        </div>
       </div>
     </div>
   );
