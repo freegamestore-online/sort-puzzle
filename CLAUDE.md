@@ -10,6 +10,7 @@ A free game on FreeGameStore.
 Free, MIT-licensed, no tracking. For platform conventions, read
 https://freegamestore.online/skills.md
 before writing or changing anything.
+Full platform rules (SKILLS.md): https://raw.githubusercontent.com/freegamestore-online/freegamestore/main/SKILLS.md
 
 ---
 

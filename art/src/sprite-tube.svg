@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="120" viewBox="0 0 40 120">
+  <defs><linearGradient id="g-e11d48" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/></linearGradient><linearGradient id="g-2563eb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#2563eb"/></linearGradient><linearGradient id="g-16a34a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#16a34a"/></linearGradient><linearGradient id="g-a16207" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#facc15"/><stop offset="1" stop-color="#a16207"/></linearGradient><linearGradient id="g-9333ea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c084fc"/><stop offset="1" stop-color="#9333ea"/></linearGradient><linearGradient id="g-ea580c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb923c"/><stop offset="1" stop-color="#ea580c"/></linearGradient><linearGradient id="g-0891b2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0891b2"/></linearGradient><linearGradient id="g-db2777" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f472b6"/><stop offset="1" stop-color="#db2777"/></linearGradient><linearGradient id="g-6366f1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a5b4fc"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs>
+  <path d="M4 4 V104 Q4 116 16 116 H24 Q36 116 36 104 V4" fill="rgba(255,255,255,0.14)" stroke="rgba(120,120,140,0.9)" stroke-width="2" stroke-linejoin="round"/>
+  <rect x="9" y="80" width="22" height="18" rx="6" fill="url(#g-e11d48)"/>
+  <rect x="12.52" y="82.88" width="14.96" height="2.88" rx="1.44" fill="rgba(255,255,255,0.4)"/>
+  <rect x="9" y="58" width="22" height="18" rx="6" fill="url(#g-16a34a)"/>
+  <rect x="12.52" y="60.88" width="14.96" height="2.88" rx="1.44" fill="rgba(255,255,255,0.4)"/>
+  <rect x="9" y="36" width="22" height="18" rx="6" fill="url(#g-2563eb)"/>
+  <rect x="12.52" y="38.88" width="14.96" height="2.88" rx="1.44" fill="rgba(255,255,255,0.4)"/>
+</svg>

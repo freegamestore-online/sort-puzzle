@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e1b4b"/><stop offset="1" stop-color="#2563eb"/></linearGradient>
+    <linearGradient id="g-e11d48" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/></linearGradient><linearGradient id="g-2563eb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#2563eb"/></linearGradient><linearGradient id="g-16a34a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#16a34a"/></linearGradient><linearGradient id="g-a16207" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#facc15"/><stop offset="1" stop-color="#a16207"/></linearGradient><linearGradient id="g-9333ea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c084fc"/><stop offset="1" stop-color="#9333ea"/></linearGradient><linearGradient id="g-ea580c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb923c"/><stop offset="1" stop-color="#ea580c"/></linearGradient><linearGradient id="g-0891b2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0891b2"/></linearGradient><linearGradient id="g-db2777" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f472b6"/><stop offset="1" stop-color="#db2777"/></linearGradient><linearGradient id="g-6366f1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a5b4fc"/><stop offset="1" stop-color="#6366f1"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect x="158" y="104" width="196" height="14" rx="7" fill="rgba(255,255,255,0.7)"/>
+  <path d="M166 116 V342 Q166 406 230 406 H282 Q346 406 346 342 V116" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.7)" stroke-width="9" stroke-linejoin="round"/>
+  <rect x="190" y="300" width="132" height="66" rx="22" fill="url(#g-2563eb)"/>
+  <rect x="211.12" y="310.56" width="89.76" height="10.56" rx="5.28" fill="rgba(255,255,255,0.4)"/>
+  <rect x="190" y="226" width="132" height="66" rx="22" fill="url(#g-16a34a)"/>
+  <rect x="211.12" y="236.56" width="89.76" height="10.56" rx="5.28" fill="rgba(255,255,255,0.4)"/>
+  <rect x="190" y="152" width="132" height="66" rx="22" fill="url(#g-e11d48)"/>
+  <rect x="211.12" y="162.56" width="89.76" height="10.56" rx="5.28" fill="rgba(255,255,255,0.4)"/>
+</svg>
