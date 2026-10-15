@@ -8,6 +8,7 @@
     "dev": "pnpm --filter @sort-puzzle/web dev",
     "build": "pnpm --filter @sort-puzzle/web build",
     "preview": "pnpm --filter @sort-puzzle/web preview",
-    "typecheck": "pnpm --filter @sort-puzzle/web exec tsc -b"
+    "typecheck": "pnpm --filter @sort-puzzle/web exec tsc -b",
+    "test": "pnpm --filter @sort-puzzle/web test"
   }
 }

@@ -27,6 +27,9 @@ This template is for building grid-based games such as:
 - `web/src/hooks/useGrid.ts` — Reusable grid state hook (rows, cols, cell operations)
 - `web/src/hooks/useHighScore.ts` — localStorage-backed high score persistence
 - `web/src/components/GameGrid.tsx` — Reusable CSS Grid renderer with touch + click support
+- `web/src/game/level.ts` — Colour Sort level generator (solvable by construction) and daily seed
+- `web/src/game/solver.ts` — Colour Sort solver, used by tests to prove levels are solvable
+- `web/src/game/rng.ts` — Seeded RNG (string seed → deterministic sequence)
 - `web/src/App.tsx` — Demo match-3 game showing all features in action
 
 ## Grid Rendering
