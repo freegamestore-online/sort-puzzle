@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { GameButton, GameShell, GameTopbar } from "@freegamestore/games";
+import { APP_NAME } from "./brand";
 import { Announcer } from "./components/Announcer";
 import { ColourSortBoard } from "./components/ColourSortBoard";
 import { DailyBoard } from "./components/DailyBoard";
@@ -118,7 +119,7 @@ export default function App() {
     <GameShell
       topbar={
         <GameTopbar
-          title="Colour Sort"
+          title={APP_NAME}
           stats={[{ label: "Moves", value: state.moves, accent: true }]}
           rules={
             <p>

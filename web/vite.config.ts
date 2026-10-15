@@ -34,9 +34,9 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: "sort-puzzle",
-        short_name: "sort-puzzle",
-        description: "sort-puzzle — free forever",
+        name: "Colour Sort",
+        short_name: "Colour Sort",
+        description: "Pour, sort and repeat. Free forever, no tracking.",
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
