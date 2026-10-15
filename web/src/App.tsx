@@ -12,6 +12,13 @@ export default function App() {
       <p style={{ color: "var(--muted)" }}>
         Your game will appear here once it&rsquo;s built.
       </p>
+      <a
+        href="https://freegamestore.online"
+        className="text-sm underline"
+        style={{ color: "var(--muted)" }}
+      >
+        Built for freegamestore.online
+      </a>
     </div></GameShell>
   );
 }
