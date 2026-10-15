@@ -30,7 +30,9 @@ This template is for building grid-based games such as:
 - `web/src/game/level.ts` — Colour Sort level generator (solvable by construction) and daily seed
 - `web/src/game/solver.ts` — Colour Sort solver, used by tests to prove levels are solvable
 - `web/src/game/rng.ts` — Seeded RNG (string seed → deterministic sequence)
-- `web/src/App.tsx` — Demo match-3 game showing all features in action
+- `web/src/game/pour.ts` + `colourSortState.ts` — Colour Sort pour rules and tap-to-select/tap-to-pour reducer
+- `web/src/components/ColourSortBoard.tsx` — Tube and coloured-layer rendering with pour animation
+- `web/src/App.tsx` — Colour Sort screen inside `GameShell`
 
 ## Grid Rendering
 - Uses CSS Grid (not canvas) for accessibility and styling flexibility

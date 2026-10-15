@@ -49,3 +49,180 @@ body {
   background: var(--paper);
   color: var(--ink);
 }
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Colour Sort board. Tubes are buttons so taps and keyboard both work. */
+.cs-play {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem 0.75rem;
+  overflow: hidden;
+}
+
+.cs-board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 0.5rem;
+  width: 100%;
+  max-width: 36rem;
+}
+
+.cs-tube-button {
+  appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0.875rem 0 0;
+  width: clamp(2.75rem, 13vw, 4.25rem);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border-radius: 0.75rem;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cs-tube-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cs-tube {
+  position: relative;
+  box-sizing: border-box;
+  height: clamp(7rem, 28svh, 13rem);
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem 0.3rem 0.5rem;
+  border: 2px solid var(--line-strong);
+  border-top: none;
+  border-radius: 0 0 1.1rem 1.1rem;
+  background: linear-gradient(180deg, rgb(128 128 128 / 0.08), rgb(128 128 128 / 0.03));
+  box-shadow: inset 0 -8px 12px -8px rgb(0 0 0 / 0.25);
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease;
+}
+
+.cs-tube::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  top: -5px;
+  height: 5px;
+  border-radius: 4px;
+  background: var(--line-strong);
+}
+
+.cs-tube[data-selected] {
+  transform: translateY(-0.75rem);
+  border-color: var(--accent);
+}
+
+.cs-tube[data-solved] {
+  border-color: var(--success);
+}
+
+.cs-slot {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  padding: 2px 0;
+}
+
+.cs-ball {
+  flex: 1;
+  border-radius: 0.45rem;
+  background: linear-gradient(180deg, var(--c-light), var(--c));
+  box-shadow:
+    inset 0 -2px 0 rgb(0 0 0 / 0.18),
+    0 1px 2px rgb(0 0 0 / 0.18);
+}
+
+.cs-ball[data-enter] {
+  animation: cs-drop 280ms cubic-bezier(0.3, 0.7, 0.4, 1) var(--drop-delay) both;
+}
+
+.cs-tube[data-pouring] {
+  animation: cs-tilt 450ms ease-in-out both;
+}
+
+@keyframes cs-tilt {
+  0%,
+  100% {
+    transform: none;
+  }
+  35%,
+  65% {
+    transform: translateY(-0.25rem) rotate(var(--tilt));
+  }
+}
+
+@keyframes cs-drop {
+  from {
+    transform: translateY(-180%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.cs-win {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--glass);
+  backdrop-filter: blur(4px);
+  animation: cs-fade 250ms ease both;
+}
+
+.cs-win-card {
+  width: min(100%, 18rem);
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--paper);
+  text-align: center;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.15);
+}
+
+@keyframes cs-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.cs-credit {
+  font-size: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-tube,
+  .cs-tube[data-pouring],
+  .cs-ball[data-enter],
+  .cs-win {
+    animation: none;
+    transition: none;
+  }
+}
