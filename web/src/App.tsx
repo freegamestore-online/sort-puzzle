@@ -1,4 +1,8 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { HAPTICS } from "./feel/haptics";
+import { ParticleLayer, type ParticleLayerHandle } from "./feel/ParticleLayer";
+import { useHaptics } from "./feel/useHaptics";
+import { useShake } from "./feel/useShake";
 import { GameButton, GameShell, GameTopbar } from "@freegamestore/games";
 import { APP_NAME } from "./brand";
 import { Announcer } from "./components/Announcer";
@@ -6,6 +10,8 @@ import { ColourSortBoard } from "./components/ColourSortBoard";
 import { DailyBoard } from "./components/DailyBoard";
 import { OptionsModal } from "./components/OptionsModal";
 import { describeChange, type Cue } from "./game/a11y";
+import { centreWithin, POUR_BURST, POUR_PULSE, topCentreWithin, WIN_BURST } from "./game/juice";
+import { ballColour } from "./game/palette";
 import { dailyKey, dailyLevel } from "./game/level";
 import { colourSortReducer, POUR_MS } from "./game/colourSortState";
 import {
@@ -43,6 +49,13 @@ export default function App() {
 
   const [cue, setCue] = useState<Cue | null>(null);
   const previous = useRef(state);
+
+  // Game feel. The feel kit only checks the OS setting, so the in-game toggle is checked here too.
+  const playRef = useRef<HTMLDivElement>(null);
+  const boardRef = useRef<HTMLDivElement>(null);
+  const particlesRef = useRef<ParticleLayerHandle>(null);
+  const shakeBoard = useShake(boardRef, { amplitude: 4, duration: 320 });
+  const haptics = useHaptics();
 
   // Save the settings, and follow the OS reduce-motion setting when it changes.
   useEffect(() => {
@@ -85,11 +98,38 @@ export default function App() {
     });
   }, [state.solved]);
 
-  // Describe each change for screen readers and sounds.
+  // Describe each change for screen readers and sounds, then play its feel.
   useEffect(() => {
     const next = describeChange(previous.current, state);
     previous.current = state;
-    if (next) setCue(next);
+    if (!next) return;
+    setCue(next);
+    const root = playRef.current;
+    if (!root) return;
+
+    if (next.kind === "invalid" && !reduceMotion) shakeBoard();
+
+    if (next.kind === "pour" && state.pour) {
+      haptics.pulse(POUR_PULSE);
+      const tube = root.querySelectorAll<HTMLElement>(".cs-tube")[state.pour.to];
+      const top = state.tubes[state.pour.to]?.at(-1);
+      if (tube && top !== undefined && !reduceMotion) {
+        const at = topCentreWithin(tube, root);
+        particlesRef.current?.burst(at.x, at.y + 16, [ballColour(top).base], POUR_BURST);
+      }
+    }
+
+    if (next.kind === "solved") {
+      haptics.pulse(HAPTICS.clear);
+      if (!reduceMotion) {
+        root.querySelectorAll<HTMLElement>(".cs-tube").forEach((tube, index) => {
+          const top = state.tubes[index]?.at(-1);
+          if (tube.dataset.solved === undefined || top === undefined) return;
+          const at = centreWithin(tube, root);
+          particlesRef.current?.burst(at.x, at.y, [ballColour(top).base], WIN_BURST);
+        });
+      }
+    }
   }, [state]);
 
   // Clear the pour animation so the next tap is accepted. Instant with reduced motion.
@@ -134,12 +174,14 @@ export default function App() {
       }
     >
       <Announcer cue={cue} />
-      <div className="cs-play">
-        <ColourSortBoard
-          state={state}
-          colourBlind={settings.colourBlind}
-          onTap={(index) => dispatch({ type: "tap", index })}
-        />
+      <div className="cs-play" ref={playRef}>
+        <div className="cs-board-wrap" ref={boardRef}>
+          <ColourSortBoard
+            state={state}
+            colourBlind={settings.colourBlind}
+            onTap={(index) => dispatch({ type: "tap", index })}
+          />
+        </div>
         <div className="cs-helpers">
           <GameButton
             variant="secondary"
@@ -178,6 +220,7 @@ export default function App() {
         >
           Built for freegamestore.online
         </a>
+        <ParticleLayer ref={particlesRef} />
       </div>
       <OptionsModal
         open={optionsOpen}

@@ -41,6 +41,9 @@ This template is for building grid-based games such as:
 - `web/src/game/a11y.ts` — Describes each state change for screen readers and sound cues
 - `web/src/components/Announcer.tsx` — Live region and pour/select/win sounds (via `useGameSounds`)
 - `web/src/components/OptionsModal.tsx` — Options dialog
+- `web/src/feel/` + `web/src/motion/` — Feel kit copied from mosaic-rush (particles, score pop, shake, haptics, reduced motion); switch to `@freegamestore/games/feel` once published
+- `web/src/hooks/useGameLoop.ts` — requestAnimationFrame loop for the particle layer
+- `web/src/game/juice.ts` — Game feel tuning: pour and win bursts, pour pulse, tube geometry
 - `web/src/App.tsx` — Colour Sort screen inside `GameShell`
 
 ## Grid Rendering

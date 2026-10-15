@@ -71,6 +71,12 @@ body,
   overflow: hidden;
 }
 
+.cs-board-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 .cs-board {
   display: flex;
   flex-wrap: wrap;
@@ -456,4 +462,16 @@ body,
 [data-motion="reduce"] .cs-win {
   animation: none;
   transition: none;
+}
+
+/* Reduced motion: the feel kit checks prefersReducedMotion() in JS; this stops CSS animations and transitions too. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
