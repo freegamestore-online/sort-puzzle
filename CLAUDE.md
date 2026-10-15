@@ -35,6 +35,11 @@ This template is for building grid-based games such as:
 - `web/src/game/progress.ts` — Daily progress and best-moves saved in localStorage
 - `web/src/game/leaderboard.ts` — Daily fewest-moves board via the leaderboard API (`period`)
 - `web/src/components/DailyBoard.tsx` — Today's board on the win card
+- `web/src/game/palette.ts` — Ball colours, colour-blind symbols, WCAG contrast helper
+- `web/src/game/settings.ts` — Options (colour-blind, large touch, theme, reduce motion) saved in localStorage
+- `web/src/game/a11y.ts` — Describes each state change for screen readers and sound cues
+- `web/src/components/Announcer.tsx` — Live region and pour/select/win sounds (via `useGameSounds`)
+- `web/src/components/OptionsModal.tsx` — Options dialog
 - `web/src/App.tsx` — Colour Sort screen inside `GameShell`
 
 ## Grid Rendering

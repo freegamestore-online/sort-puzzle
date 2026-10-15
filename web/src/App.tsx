@@ -1,18 +1,12 @@
-import { useEffect, useMemo, useReducer, useState } from "react";
-import {
-  GameButton,
-  GameShell,
-  GameTopbar,
-  useGameSounds,
-  useSound,
-} from "@freegamestore/games";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { GameButton, GameShell, GameTopbar } from "@freegamestore/games";
+import { Announcer } from "./components/Announcer";
 import { ColourSortBoard } from "./components/ColourSortBoard";
 import { DailyBoard } from "./components/DailyBoard";
+import { OptionsModal } from "./components/OptionsModal";
+import { describeChange, type Cue } from "./game/a11y";
 import { dailyKey, dailyLevel } from "./game/level";
-import {
-  colourSortReducer,
-  POUR_MS,
-} from "./game/colourSortState";
+import { colourSortReducer, POUR_MS } from "./game/colourSortState";
 import {
   defaultStorage,
   loadBestMoves,
@@ -21,6 +15,13 @@ import {
   saveState,
 } from "./game/progress";
 import { submitDailyMoves } from "./game/leaderboard";
+import {
+  effectiveReduceMotion,
+  loadSettings,
+  osPrefersReducedMotion,
+  saveSettings,
+  type Settings,
+} from "./game/settings";
 
 export default function App() {
   // One clock reading for the whole session, so the level, save key and board all agree.
@@ -33,6 +34,36 @@ export default function App() {
   );
   const [rank, setRank] = useState<number | undefined>(undefined);
   const [boardVersion, setBoardVersion] = useState(0);
+
+  const [settings, setSettings] = useState<Settings>(() => loadSettings(storage));
+  const [osReduce, setOsReduce] = useState(osPrefersReducedMotion);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const reduceMotion = effectiveReduceMotion(settings, osReduce);
+
+  const [cue, setCue] = useState<Cue | null>(null);
+  const previous = useRef(state);
+
+  // Save the settings, and follow the OS reduce-motion setting when it changes.
+  useEffect(() => {
+    saveSettings(settings, storage);
+  }, [settings, storage]);
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => setOsReduce(query.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+
+  // Apply the display settings to the page. Theme uses the same data-theme
+  // attribute as the platform's theme toggle.
+  useEffect(() => {
+    const root = document.documentElement;
+    setAttribute(root, "theme", settings.theme === "system" ? null : settings.theme);
+    setAttribute(root, "touch", settings.largeTouch ? "large" : null);
+    setAttribute(root, "motion", reduceMotion ? "reduce" : null);
+  }, [settings.theme, settings.largeTouch, reduceMotion]);
 
   // Save after every change that matters, so a reload resumes the same game.
   useEffect(() => {
@@ -53,12 +84,29 @@ export default function App() {
     });
   }, [state.solved]);
 
-  // Clear the pour animation so the next tap is accepted.
+  // Describe each change for screen readers and sounds.
+  useEffect(() => {
+    const next = describeChange(previous.current, state);
+    previous.current = state;
+    if (next) setCue(next);
+  }, [state]);
+
+  // Clear the pour animation so the next tap is accepted. Instant with reduced motion.
   useEffect(() => {
     if (!state.pour) return;
-    const timer = setTimeout(() => dispatch({ type: "pourEnd" }), POUR_MS);
+    const timer = setTimeout(() => dispatch({ type: "pourEnd" }), reduceMotion ? 0 : POUR_MS);
     return () => clearTimeout(timer);
-  }, [state.pour]);
+  }, [state.pour, reduceMotion]);
+
+  // Escape clears the selection. It is ignored while the options dialog is open.
+  useEffect(() => {
+    if (optionsOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") dispatch({ type: "cancel" });
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [optionsOpen]);
 
   const reset = () => {
     setRank(undefined);
@@ -76,17 +124,19 @@ export default function App() {
             <p>
               Tap a tube to select it, then tap another tube to pour its top
               colour there. Pour only onto an empty tube or the same colour.
-              Sort every tube so each holds one colour.
+              Sort every tube so each holds one colour. Press Escape to clear a
+              selection.
             </p>
           }
           onRestart={reset}
         />
       }
     >
-      <SoundCues pourId={state.pour?.id ?? null} solved={state.solved} />
+      <Announcer cue={cue} />
       <div className="cs-play">
         <ColourSortBoard
           state={state}
+          colourBlind={settings.colourBlind}
           onTap={(index) => dispatch({ type: "tap", index })}
         />
         <div className="cs-helpers">
@@ -105,6 +155,9 @@ export default function App() {
             onClick={() => dispatch({ type: "extraTube" })}
           >
             {state.extraTubeUsed ? "Extra tube used" : "Add extra tube"}
+          </GameButton>
+          <GameButton variant="ghost" size="md" onClick={() => setOptionsOpen(true)}>
+            Options
           </GameButton>
         </div>
         {showWin && (
@@ -125,30 +178,19 @@ export default function App() {
           Built for freegamestore.online
         </a>
       </div>
+      <OptionsModal
+        open={optionsOpen}
+        onClose={() => setOptionsOpen(false)}
+        settings={settings}
+        onChange={(patch) => setSettings((current) => ({ ...current, ...patch }))}
+      />
     </GameShell>
   );
 }
 
-// Sound must sit inside GameShell, which provides the sound context.
-function SoundCues({
-  pourId,
-  solved,
-}: {
-  pourId: number | null;
-  solved: boolean;
-}) {
-  const { muted } = useSound();
-  const { playDrop, playLevelUp } = useGameSounds();
-
-  useEffect(() => {
-    if (pourId !== null && !muted) playDrop();
-  }, [pourId]);
-
-  useEffect(() => {
-    if (solved && !muted) playLevelUp();
-  }, [solved]);
-
-  return null;
+function setAttribute(element: HTMLElement, name: string, value: string | null) {
+  if (value === null) delete element.dataset[name];
+  else element.dataset[name] = value;
 }
 
 function WinCard({
@@ -166,10 +208,19 @@ function WinCard({
   onPlayAgain: () => void;
   onUndo: () => void;
 }) {
+  const card = useRef<HTMLDivElement>(null);
+
+  // Move focus into the card so keyboard players land on the next action.
+  useEffect(() => {
+    card.current?.focus();
+  }, []);
+
   return (
-    <div className="cs-win" role="status">
-      <div className="cs-win-card">
-        <h2 style={{ fontFamily: "Fraunces, serif", margin: 0 }}>Sorted!</h2>
+    <div className="cs-win">
+      <div className="cs-win-card" ref={card} tabIndex={-1} aria-labelledby="cs-win-title">
+        <h2 id="cs-win-title" style={{ fontFamily: "Fraunces, serif", margin: 0 }}>
+          Sorted!
+        </h2>
         <p style={{ color: "var(--muted)", margin: "0.25rem 0 0.75rem" }}>
           Solved in {moves} move{moves === 1 ? "" : "s"}.
           {rank !== undefined && <> Ranked #{rank} today.</>}

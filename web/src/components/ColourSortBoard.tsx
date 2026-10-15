@@ -1,20 +1,6 @@
 import type { CSSProperties } from "react";
 import type { ColourSortState } from "../game/colourSortState";
-
-// Each colour has a base and a lighter top edge. Named for screen readers.
-export const BALL_COLOURS = [
-  { name: "red", base: "#e11d48", light: "#fb7185" },
-  { name: "blue", base: "#2563eb", light: "#60a5fa" },
-  { name: "green", base: "#16a34a", light: "#4ade80" },
-  { name: "yellow", base: "#ca8a04", light: "#facc15" },
-  { name: "purple", base: "#9333ea", light: "#c084fc" },
-  { name: "orange", base: "#ea580c", light: "#fb923c" },
-  { name: "cyan", base: "#0891b2", light: "#22d3ee" },
-  { name: "pink", base: "#db2777", light: "#f472b6" },
-  { name: "indigo", base: "#4f46e5", light: "#818cf8" },
-] as const;
-
-const colourOf = (ball: number) => BALL_COLOURS[ball % BALL_COLOURS.length]!;
+import { ballColour, SYMBOL_PATHS } from "../game/palette";
 
 // Timing for the pour: the tube tilts, then each poured ball drops in.
 const DROP_DELAY_MS = 180;
@@ -22,10 +8,11 @@ const DROP_STAGGER_MS = 80;
 
 interface ColourSortBoardProps {
   state: ColourSortState;
+  colourBlind: boolean;
   onTap: (index: number) => void;
 }
 
-export function ColourSortBoard({ state, onTap }: ColourSortBoardProps) {
+export function ColourSortBoard({ state, colourBlind, onTap }: ColourSortBoardProps) {
   const { tubes, capacity, selected, pour } = state;
 
   return (
@@ -36,7 +23,7 @@ export function ColourSortBoard({ state, onTap }: ColourSortBoardProps) {
         const label =
           tube.length === 0
             ? `Tube ${index + 1}, empty`
-            : `Tube ${index + 1}, ${tube.length} ball${tube.length === 1 ? "" : "s"}, top ${colourOf(top!).name}${isSorted ? ", sorted" : ""}`;
+            : `Tube ${index + 1}, ${tube.length} ball${tube.length === 1 ? "" : "s"}, top ${ballColour(top!).name}${isSorted ? ", sorted" : ""}`;
 
         const isPouringFrom = pour?.from === index;
         const tiltDirection = pour && pour.to > pour.from ? 1 : -1;
@@ -79,12 +66,18 @@ export function ColourSortBoard({ state, onTap }: ColourSortBoardProps) {
                         data-enter={isNew ? "" : undefined}
                         style={
                           {
-                            "--c": colourOf(ball).base,
-                            "--c-light": colourOf(ball).light,
+                            "--c": ballColour(ball).base,
+                            "--c-light": ballColour(ball).light,
                             "--drop-delay": `${dropDelay}ms`,
                           } as CSSProperties
                         }
-                      />
+                      >
+                        {colourBlind && (
+                          <svg className="cs-glyph" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <path d={SYMBOL_PATHS[ballColour(ball).symbol]} fill={ballColour(ball).glyph} />
+                          </svg>
+                        )}
+                      </div>
                     )}
                   </div>
                 );

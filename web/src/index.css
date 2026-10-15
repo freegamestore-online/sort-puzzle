@@ -267,3 +267,193 @@ body,
   font-variant-numeric: tabular-nums;
   font-weight: 700;
 }
+
+/* Themes from Options. "System" removes data-theme and follows the OS. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0f0f0f;
+  --bg: #0f0f0f;
+  --ink: #f5f5f5;
+  --muted: #9ca3af;
+  --line: #2d2d2d;
+  --line-strong: #404040;
+  --panel: #1a1a1a;
+  --glass: rgba(15, 15, 15, 0.8);
+  --dock: #1a1a1a;
+  --success: #22c55e;
+  --warning: #fbbf24;
+  --error: #ef4444;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --paper: #ffffff;
+  --bg: #ffffff;
+  --ink: #1a1a1a;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --line-strong: #d1d5db;
+  --panel: #f9fafb;
+  --glass: rgba(255, 255, 255, 0.8);
+  --dock: #ffffff;
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #dc2626;
+}
+
+/* Large touch targets: bigger tubes and balls, same layout. */
+:root[data-touch="large"] .cs-tube-button {
+  width: clamp(3.75rem, 16vw, 5rem);
+}
+
+:root[data-touch="large"] .cs-tube {
+  height: clamp(8rem, 30svh, 15rem);
+}
+
+:root[data-touch="large"] .cs-board {
+  gap: 0.5rem 0.75rem;
+}
+
+:root[data-touch="large"] .cs-ball {
+  border-radius: 0.6rem;
+}
+
+/* Visual polish: subtle glow behind the board, glass sheen on tubes, gloss on balls. */
+.cs-play {
+  background: radial-gradient(
+    120% 60% at 50% 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent),
+    transparent 70%
+  );
+}
+
+.cs-tube::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 10px;
+  left: 5px;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.35), rgb(255 255 255 / 0));
+  pointer-events: none;
+}
+
+.cs-tube[data-selected] {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent),
+    0 8px 18px -6px rgb(0 0 0 / 0.3);
+}
+
+.cs-tube[data-solved] {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--success) 25%, transparent);
+}
+
+.cs-ball {
+  position: relative;
+}
+
+.cs-ball::before {
+  content: "";
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  top: 14%;
+  height: 16%;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.35);
+  pointer-events: none;
+}
+
+/* Colour-blind symbol on each ball. */
+.cs-glyph {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 55%;
+  height: 55%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cs-win-card:focus {
+  outline: none;
+}
+
+.cs-win-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Options dialog. Every control is at least 44px tall. */
+.cs-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: left;
+}
+
+.cs-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-height: 44px;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.cs-option input {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  accent-color: var(--accent);
+}
+
+.cs-option small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.cs-theme {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.cs-theme legend {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.cs-theme-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cs-theme-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.75rem;
+  cursor: pointer;
+}
+
+.cs-theme-choice:has(input:checked) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* Reduced motion from Options or the OS: no tilts, drops or fades. */
+[data-motion="reduce"] .cs-tube,
+[data-motion="reduce"] .cs-ball[data-enter],
+[data-motion="reduce"] .cs-win {
+  animation: none;
+  transition: none;
+}

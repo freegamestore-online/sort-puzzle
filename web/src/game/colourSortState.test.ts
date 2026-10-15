@@ -224,3 +224,12 @@ describe('random play with undo', () => {
     }
   });
 });
+
+describe('cancel', () => {
+  it('clears the selection, and does nothing when nothing is selected', () => {
+    const selected = tap(createState(level), 0);
+    expect(act(selected, { type: 'cancel' }).selected).toBeNull();
+    const idle = createState(level);
+    expect(act(idle, { type: 'cancel' })).toBe(idle);
+  });
+});

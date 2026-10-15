@@ -34,6 +34,7 @@ export type ColourSortAction =
   | { type: 'tap'; index: number }
   | { type: 'pourEnd' }
   | { type: 'undo' }
+  | { type: 'cancel' }
   | { type: 'extraTube' }
   | { type: 'reset'; level: Level };
 
@@ -67,6 +68,9 @@ export function colourSortReducer(state: ColourSortState, action: ColourSortActi
 
     case 'pourEnd':
       return state.pour ? { ...state, pour: null } : state;
+
+    case 'cancel':
+      return state.selected === null ? state : { ...state, selected: null };
 
     case 'undo': {
       const previous = state.history[state.history.length - 1];
