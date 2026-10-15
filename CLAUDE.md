@@ -32,6 +32,9 @@ This template is for building grid-based games such as:
 - `web/src/game/rng.ts` — Seeded RNG (string seed → deterministic sequence)
 - `web/src/game/pour.ts` + `colourSortState.ts` — Colour Sort pour rules and tap-to-select/tap-to-pour reducer
 - `web/src/components/ColourSortBoard.tsx` — Tube and coloured-layer rendering with pour animation
+- `web/src/game/progress.ts` — Daily progress and best-moves saved in localStorage
+- `web/src/game/leaderboard.ts` — Daily fewest-moves board via the leaderboard API (`period`)
+- `web/src/components/DailyBoard.tsx` — Today's board on the win card
 - `web/src/App.tsx` — Colour Sort screen inside `GameShell`
 
 ## Grid Rendering

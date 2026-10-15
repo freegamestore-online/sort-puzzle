@@ -15,7 +15,7 @@ export interface PourEvent {
 }
 
 /** What undo restores. Everything that a player action can change is in here. */
-interface Snapshot {
+export interface Snapshot {
   tubes: Tube[];
   moves: number;
   extraTubeUsed: boolean;

@@ -117,9 +117,14 @@ function reverseMoves(tubes: readonly Tube[], capacity: number): Array<[number, 
   return moves;
 }
 
+/** Daily puzzle key: the UTC calendar date as YYYY-MM-DD. */
+export function dailyKey(date: Date = new Date()): string {
+  return date.toISOString().slice(0, 10);
+}
+
 /** Seed for the daily puzzle, based on the UTC calendar date. */
 export function dailySeed(date: Date = new Date()): string {
-  return `sort-puzzle:daily:${date.toISOString().slice(0, 10)}`;
+  return `sort-puzzle:daily:${dailyKey(date)}`;
 }
 
 export function dailyLevel(date: Date = new Date(), difficulty: Difficulty = DIFFICULTY_TIERS.medium): Level {

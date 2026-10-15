@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import {
   GameButton,
   GameShell,
@@ -7,16 +7,51 @@ import {
   useSound,
 } from "@freegamestore/games";
 import { ColourSortBoard } from "./components/ColourSortBoard";
-import { dailyLevel } from "./game/level";
+import { DailyBoard } from "./components/DailyBoard";
+import { dailyKey, dailyLevel } from "./game/level";
 import {
   colourSortReducer,
-  createState,
   POUR_MS,
 } from "./game/colourSortState";
+import {
+  defaultStorage,
+  loadBestMoves,
+  restoreState,
+  saveBestMoves,
+  saveState,
+} from "./game/progress";
+import { submitDailyMoves } from "./game/leaderboard";
 
 export default function App() {
-  const level = useMemo(() => dailyLevel(), []);
-  const [state, dispatch] = useReducer(colourSortReducer, level, createState);
+  // One clock reading for the whole session, so the level, save key and board all agree.
+  const today = useMemo(() => new Date(), []);
+  const date = dailyKey(today);
+  const level = useMemo(() => dailyLevel(today), [today]);
+  const storage = useMemo(defaultStorage, []);
+  const [state, dispatch] = useReducer(colourSortReducer, level, (lvl) =>
+    restoreState(lvl, date, storage),
+  );
+  const [rank, setRank] = useState<number | undefined>(undefined);
+  const [boardVersion, setBoardVersion] = useState(0);
+
+  // Save after every change that matters, so a reload resumes the same game.
+  useEffect(() => {
+    saveState(state, date, storage);
+  }, [state.tubes, state.moves, state.extraTubeUsed, state.history]);
+
+  // Post the solve. Skipped if an equal or better score is already posted today.
+  // Failures are silent (see leaderboard.ts).
+  useEffect(() => {
+    if (!state.solved) return;
+    const best = loadBestMoves(date, storage);
+    if (best !== null && state.moves >= best) return;
+    void submitDailyMoves(date, state.moves).then((result) => {
+      if (!result.ok) return;
+      saveBestMoves(date, state.moves, storage);
+      setRank(result.rank);
+      setBoardVersion((version) => version + 1);
+    });
+  }, [state.solved]);
 
   // Clear the pour animation so the next tap is accepted.
   useEffect(() => {
@@ -25,7 +60,10 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [state.pour]);
 
-  const reset = () => dispatch({ type: "reset", level });
+  const reset = () => {
+    setRank(undefined);
+    dispatch({ type: "reset", level });
+  };
   const showWin = state.solved && state.pour === null;
 
   return (
@@ -72,6 +110,9 @@ export default function App() {
         {showWin && (
           <WinCard
             moves={state.moves}
+            rank={rank}
+            date={date}
+            boardVersion={boardVersion}
             onPlayAgain={reset}
             onUndo={() => dispatch({ type: "undo" })}
           />
@@ -112,10 +153,16 @@ function SoundCues({
 
 function WinCard({
   moves,
+  rank,
+  date,
+  boardVersion,
   onPlayAgain,
   onUndo,
 }: {
   moves: number;
+  rank: number | undefined;
+  date: string;
+  boardVersion: number;
   onPlayAgain: () => void;
   onUndo: () => void;
 }) {
@@ -125,7 +172,9 @@ function WinCard({
         <h2 style={{ fontFamily: "Fraunces, serif", margin: 0 }}>Sorted!</h2>
         <p style={{ color: "var(--muted)", margin: "0.25rem 0 0.75rem" }}>
           Solved in {moves} move{moves === 1 ? "" : "s"}.
+          {rank !== undefined && <> Ranked #{rank} today.</>}
         </p>
+        <DailyBoard date={date} refreshKey={boardVersion} />
         <GameButton variant="primary" size="lg" block onClick={onPlayAgain}>
           Play again
         </GameButton>
