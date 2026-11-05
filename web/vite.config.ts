@@ -55,5 +55,8 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: "./src/test/setup.ts",
+    // The SDK ships CSS modules in its dist; inline it so vite transforms them
+    // instead of Node trying to import a .css file.
+    server: { deps: { inline: ["@freegamestore/games"] } },
   },
 });
